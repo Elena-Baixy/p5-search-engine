@@ -1,6 +1,5 @@
+#!/usr/bin/env python3
 """Map 0."""
-<<<<<<< Updated upstream
-=======
 import csv
 import sys
 import re
@@ -9,15 +8,20 @@ from pprint import pprint
 
 csv.field_size_limit(sys.maxsize)
 
-def count():
-    '''Job 0, calculate N.'''
-    with open('example_input/input.csv', 'r') as csv_file:
-        csv_reader = csv.reader(csv_file)
-        rows = list(csv_reader)
-        length = len(rows)
-        # print(length)
-    with open('output0/total_document_count.txt', 'w') as output_file:
-        output_file.write(str(length))
+import sys
+
+for line in sys.stdin:
+    term = line.split()[1]
+    docid = line.split()[0]
+    tf = line.split()[2]
+    N = line.split()[3]
+    print (f"{term} \t {docid} {tf} {N}")
+    # words = line.split()
+    # print (words)
+    # for word in words:
+    #     print(f"{word}\t")
+
+
 
 def clean():
     '''cleaning the data. return tuple_word[[]] as (doc_id,term).'''
@@ -42,6 +46,11 @@ def clean():
                     filtered_sentence.append((row[0],token))
             tuple_word.append(filtered_sentence)
             filtered_sentence = []
+    val = 1
+    for doc in tuple_word:
+        for tup in doc:
+            # print(tup)
+            print (f"{tup}\t{val}")
     return tuple_word
 
 
@@ -53,7 +62,6 @@ def bound(tuple_word):
         new_dict = dict(Counter(doc))
         # pprint(new_dict)
         id_word.update(new_dict)
-    # pprint(id_word)
     # for key,value in id_word.items():
     #     print(f"{key[0]}\t{key[1]}\t{value}")
         # pprint(id_word)
@@ -64,16 +72,13 @@ def count_nk(id_word):
     word_value = []
     for key,value in id_word:
         word_value.append(value)
-    # print(word_value)
     for word in word_value:
         word_nk = dict(Counter(word_value))
     print(word_nk)
-
     # breakpoint()
 
 
 #count()
-tuple_word = clean()
-id_word = bound(tuple_word)
-count_nk(id_word)
->>>>>>> Stashed changes
+# tuple_word = clean()
+# id_word = bound(tuple_word)
+# count_nk(id_word)
