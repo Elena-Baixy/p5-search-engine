@@ -1,6 +1,3 @@
-<<<<<<< Updated upstream
-"""Reduce 0."""
-=======
 #!/usr/bin/env python3
 """Reduce 0.
 
@@ -14,12 +11,11 @@ import itertools
 
 def reduce_one_group(key, group):
     group = list(group)
-
+    print(key)
     # calculate x_mean or y_mean
-    for line in group:
-        print(line)
-    #     docid, term,tf = line.strip().split()
-    #     print(docid, term,tf)
+    # for line in group:
+    #     print(line)
+        # print(line.split()[0])
 
     return 0
 
@@ -27,8 +23,8 @@ def reduce_one_group(key, group):
 def keyfunc(line):
     """Return the key from a TAB-delimited key-value pair."""
     #group by doc_id
-    print(line)
-    return line.partition("\t")[0]
+    # print(line.split()[0])
+    return line.split()[0]
 
 
 def main():
@@ -42,4 +38,3 @@ def main():
 
 if __name__ == "__main__":
     main()
->>>>>>> Stashed changes

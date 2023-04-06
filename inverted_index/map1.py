@@ -16,65 +16,33 @@ def clean():
     stopwords_list =[]
     total_docu_count = 0 
     with open("stopwords.txt", "r") as stopwords:
-        
-
         for line in stopwords:
             line = line.replace("\n","")
             stopwords_list.append(line)
-    with open('example_input/input.csv', 'r') as csv_file:
-        csv_reader = csv.reader(csv_file)
-        rows = list(csv_reader)
-        total_docu_count = len(rows)
+    with open('total_document_count.txt', 'r') as file:
+        total_docu_count = file.readline().strip()
+    csv_reader = csv.reader(sys.stdin)  
+    # csv_reader = csv.reader(csv_file)
+    for row in csv_reader:
 
-    with open('example_input/input.csv', 'r') as csv_file:
-        csv_reader = csv.reader(csv_file)  
-        # print(total_docu_count)
-        # csv_reader = csv.reader(csv_file)
-        for row in csv_reader:
-            # total_docu_count +=1
-            new_row = row[1] + " " + row[2]
-            new_row = re.sub(r"[^a-zA-Z0-9 ]+", "", new_row)
-            new_row = new_row.replace("  "," ")
-            new_row = new_row.casefold()
-            tokens = new_row.split(" ")
-            for token in tokens:
-                if token not in stopwords_list:
-                    filtered_sentence.append((row[0],token))
-            tuple_word.append(filtered_sentence)
-            filtered_sentence = []
+        new_row = row[1] + " " + row[2]
+        new_row = re.sub(r"[^a-zA-Z0-9 ]+", "", new_row)
+        new_row = new_row.replace("  "," ")
+        new_row = new_row.casefold()
+        tokens = new_row.split(" ")
+        for token in tokens:
+            if token not in stopwords_list:
+                filtered_sentence.append((row[0],token))
+        tuple_word.append(filtered_sentence)
+        # print (tuple_word)
+        filtered_sentence = []
     val = 1
     for doc in tuple_word:
         for tup in doc:
-            # print(tup)
             print (f"{tup}\t {total_docu_count}")
     return tuple_word
 
 
-def bound(tuple_word): 
-    '''Count_tf,return a ((doc_id,term),tf) dict.'''
-    id_word = {}
-    for doc in tuple_word:
-        # pprint(doc)
-        new_dict = dict(Counter(doc))
-        # pprint(new_dict)
-        id_word.update(new_dict)
-    # for key,value in id_word.items():
-    #     print(f"{key[0]}\t{key[1]}\t{value}")
-        # pprint(id_word)
-    return id_word
-
-def count_nk(id_word):
-    '''Count_nk.'''
-    word_value = []
-    for key,value in id_word:
-        word_value.append(value)
-    for word in word_value:
-        word_nk = dict(Counter(word_value))
-    print(word_nk)
-    # breakpoint()
-
-
 #count()
 tuple_word = clean()
-# id_word = bound(tuple_word)
-# count_nk(id_word)
+

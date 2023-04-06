@@ -14,21 +14,20 @@ from collections import Counter
 
 def reduce_one_group(key, group):
     group = list(group)
-
-    # calculate x_mean or y_mean
-    tf_list = []
-    # print(key)
-    tf_list.append(key)
     for line in group:
-        docid_tf_norm = line.split("\t")[1].strip()
-        tf_list.append(docid_tf_norm)
-    print(tf_list)
+        # print(line)
+        docid, term, idf, tf, normalization_factor = line.split()
+        # print(term)
+        print(f"{term} {idf} {docid} {tf} {normalization_factor}")
     return 0
 
 
 def keyfunc(line):
     """Return the key from a TAB-delimited key-value pair."""
-    #group by doc_id
+    #group by doc_i
+    
+    # term_idf_tf_norm = line.partition("\t")[2].strip()
+    # term = term_idf_tf_norm.split()[0]
     return line.partition("\t")[0]
 
 

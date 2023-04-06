@@ -26,15 +26,15 @@ set -x
 # Remove output directories
 rm -rf output output[0-9]
 
-# Job 0: Document Count (this job is not part of the pipeline)
-madoop \
-  -input ${PIPELINE_INPUT} \
-  -output output0 \
-  -mapper ./map0.py \
-  -reducer ./reduce0.py
+# # Job 0: Document Count (this job is not part of the pipeline)
+# madoop \
+#   -input ${PIPELINE_INPUT} \
+#   -output output0 \
+#   -mapper ./map0.py \
+#   -reducer ./reduce0.py
 
-# Copy document count to a separate file
-cp output0/part-00000 total_document_count.txt
+# # Copy document count to a separate file
+# cp output0/part-00000 total_document_count.txt
 
 # Job 1
 madoop \
@@ -49,3 +49,17 @@ madoop \
   -output output2 \
   -mapper ./map2.py \
   -reducer ./reduce2.py
+
+# # Job 3
+# madoop \
+#   -input output2 \
+#   -output output3 \
+#   -mapper ./map3.py \
+#   -reducer ./reduce3.py
+
+# # Job 4
+# madoop \
+#   -input output3 \
+#   -output output \
+#   -mapper ./map4.py \
+#   -reducer ./reduce4.py
