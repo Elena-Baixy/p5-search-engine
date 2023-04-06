@@ -15,23 +15,29 @@ from collections import Counter
 def reduce_one_group(key, group):
     group = list(group)
 
-    # calculate x_mean or y_mean
     id_word = {}
+    # print(key)
+    
     for line in group:
-        # print(line)
-        docAndTerm = line.partition("\t")[0]
-        total_docu_count = line.partition("\t")[2].strip()
-        # print(total_docu_count)
-        if docAndTerm in id_word.keys():
-            id_word[docAndTerm] +=1
+        # of format {docid} {token}\t {total_docu_count}
+        
+        docid = line.split()[0]
+        term = line.split()[1]
+        total_docu_count = line.split()[2]
+
+        docid, term, total_docu_count =  line.split()
+        doc_term = (docid,term)
+
+        if doc_term in id_word.keys():
+            id_word[doc_term] +=1
         else:
-            id_word[docAndTerm] = 1
-            
-    for key,tf in id_word.items():
-        docid = key.split(",")[0][2]
-        term = key.split(",")[1].split("'")[1]
-        print(f"{docid} {term} \t {tf} {total_docu_count}")
+            id_word[doc_term] = 1
+
     # print(id_word)
+    for key,tf in id_word.items():
+        docid = key[0]
+        term = key[1]
+        print(f"{docid} {term} \t {tf} {total_docu_count}")
     return 0
 
 

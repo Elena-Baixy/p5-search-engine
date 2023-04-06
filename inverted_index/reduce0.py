@@ -12,18 +12,14 @@ import itertools
 def reduce_one_group(key, group):
     group = list(group)
     print(key)
-    # calculate x_mean or y_mean
-    # for line in group:
-    #     print(line)
-        # print(line.split()[0])
 
     return 0
 
 
 def keyfunc(line):
     """Return the key from a TAB-delimited key-value pair."""
-    #group by doc_id
-    # print(line.split()[0])
+    # 这里其实就是一个数字都不用group但是她非要keyfunc return一个delimiter 
+    # 这个line.split()[0]在很大的input.csv print的数字应该是3268 但是现在是112
     return line.split()[0]
 
 

@@ -20,13 +20,13 @@ def reduce_one_group(key, group):
     count = 0
     nk = len(group)
     for line in group:
+        # print(line)
         term, docid, tf, N = line.split()
         N = int(N)
         tf = int (tf)
         idf  = math.log10(N/nk)
         w = tf * idf
         w_squared = w * w
-        # print(term, docid, tf, nk, idf, w, N)
         print(f"{docid} \t {term } {tf} {idf} {w_squared} ")
     return 0
 
