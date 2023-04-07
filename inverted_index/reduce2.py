@@ -27,7 +27,7 @@ def reduce_one_group(key, group):
         idf  = math.log10(N/nk)
         w = tf * idf
         w_squared = w * w
-        print(f"{docid} \t {term } {tf} {idf} {w_squared} ")
+        print(f"{docid} \t {term} {tf} {idf} {w_squared} ")
     return 0
 
 

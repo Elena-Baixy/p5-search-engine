@@ -16,7 +16,7 @@ def reduce_one_group(key, group):
     group = list(group)
     for line in group:
         # print(line)
-        docid, term, idf, tf, normalization_factor = line.split()
+        key, term, idf, tf, normalization_factor,docid = line.split()
         # print(term)
         print(f"{term} {idf} {docid} {tf} {normalization_factor}")
     return 0

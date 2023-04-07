@@ -15,4 +15,4 @@ for line in sys.stdin:
     key = int(line.split()[2]) % 3
     
     # print(key)
-    print (f"{key} \t {line.split()[0]}  {line.split()[1]} {line.split()[3]} {line.split()[4]}")
+    print (f"{key} \t {line.split()[0]}  {line.split()[1]} {line.split()[3]} {line.split()[4]} {line.split()[2]}")
