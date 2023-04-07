@@ -11,31 +11,38 @@ import itertools
 from collections import Counter
 
 
-
-def reduce_one_group(key, group):
+def order(key, group,combined):
     group = list(group)
     for line in group:
-        # print(line)
-        key, term, idf, tf, normalization_factor,docid = line.split()
-        # print(term)
-        print(f"{term} {idf} {docid} {tf} {normalization_factor}")
-    return 0
+        line = line.replace("\n","")
+        line = line.replace("\t ","")
+        key = line.split(" ",1)[0]
+        line = line.split(" ",1)[1].strip() # docid, idf ...
+        term = line.split(" ",1)[0]
+        value = line.split(" ",2)[2]
+        term_pair = key + " " + term
+        if term_pair not in combined:
+            combined[term_pair] = line
+        else:
+            combined[term_pair] = combined[term_pair] + " " +value
+
+def reduce_one_group(key,group,combined):
+    group = list(group)
+    for term_pair in combined:
+        print(f"{combined[term_pair]}")
 
 
 def keyfunc(line):
     """Return the key from a TAB-delimited key-value pair."""
-    #group by doc_i
-    
-    # term_idf_tf_norm = line.partition("\t")[2].strip()
-    # term = term_idf_tf_norm.split()[0]
     return line.partition("\t")[0]
 
 
 def main():
     """Divide sorted lines into groups that share a key."""
-    count = 0
+    combined = {}
     for key, group in itertools.groupby(sys.stdin, keyfunc):
-        reduce_one_group(key, group)
+        order(key, group,combined)
+        reduce_one_group(key, group,combined)
     # print(count)
 
 

@@ -26,7 +26,7 @@ def reduce_one_group(key, group):
 
     for line in group:
         docid, term, tf,idf, w_squared = line.split()
-        print(f"{term} {idf} \t {docid} {tf} {normalization_factor}")
+        print(f"{term} {docid} \t {idf} {tf} {normalization_factor}")
     return 0
 
 
