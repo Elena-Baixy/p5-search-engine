@@ -63,3 +63,7 @@ madoop \
   -output output \
   -mapper ./map4.py \
   -reducer ./reduce4.py
+
+cp output/part-00000 index_server/index/inverted_index/inverted_index_0.txt
+cp output/part-00001 index_server/index/inverted_index/inverted_index_1.txt
+cp output/part-00002 index_server/index/inverted_index/inverted_index_2.txt
