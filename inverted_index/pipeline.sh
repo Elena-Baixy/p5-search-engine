@@ -2,7 +2,7 @@
 #
 # Example of how to chain MapReduce jobs together.  The output of one
 # job is the input to the next.
-#
+# !!!You'll specify the input directory in the Madoop commands you write in the pipeline script.
 # Hadoop (or Madoop) options
 # jar index/hadoop/hadoop-streaming-2.7.2.jar   # Hadoop configuration
 # -input <directory>                            # Input directory

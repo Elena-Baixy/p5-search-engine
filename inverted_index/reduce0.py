@@ -2,6 +2,7 @@
 """Reduce 0.
 
 Template reducer.
+ output doc_id % 3 as the key in the last map stage, and output normally to standard output in the last reduce stage. 
 
 https://github.com/eecs485staff/madoop/blob/main/README_Hadoop_Streaming.md
 """
@@ -9,9 +10,9 @@ import sys
 import itertools
 
 
-def reduce_one_group(key, group):
+def reduce_one_group(line):
     """Reduce one group."""
-    assert False, "IMPLEMENT ME"
+    print(line)
 
 
 def keyfunc(line):
@@ -21,8 +22,9 @@ def keyfunc(line):
 
 def main():
     """Divide sorted lines into groups that share a key."""
-    for key, group in itertools.groupby(sys.stdin, keyfunc):
-        reduce_one_group(key, group)
+    for line in sys.stdin:
+        reduce_one_group(line)
+        #where can I get those data
 
 
 if __name__ == "__main__":
