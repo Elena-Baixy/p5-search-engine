@@ -20,6 +20,6 @@ for line in sys.stdin:
     #N = line.split()[3]
     # N = 3268
     # print(N)
-    print (f"{term} \t {docid} {tf} {N}")
+    print (f"{term}\t{docid} {tf} {N}")
 
 

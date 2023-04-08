@@ -12,21 +12,41 @@ import math
 from collections import Counter
 
 
-
-def reduce_one_group(key, group):
+def calculate_w(key, group,output_re):
     group = list(group)
-
     # calculate x_mean or y_mean
-    normalization_factor = 0
+    w_squared = 0
     for line in group:
-        docid, term, tf,idf, w_squared = line.split()
-        w_squared = float(w_squared)
-        normalization_factor += w_squared
-    # normalization_factor = math.sqrt(normalization_factor)
+        output_re.append(line)
+        line = line.replace("\n","")
+        docid = line.split("\t")[0]
+        line = line.split("\t")[1]
+        term = line.split()[0]
+        nk = line.split()[2]
+        tf = line.split()[1]
+        N = line.split()[3]
+        tf = int(tf)
+        N = int(N)
+        nk = int(nk)
+        idf  = math.log10(N/nk)
+        w = tf * idf
+        w_squared += w * w
+    return w_squared
 
-    for line in group:
-        docid, term, tf,idf, w_squared = line.split()
-        print(f"{term} {docid} \t {idf} {tf} {normalization_factor}")
+def reduce_one_group(output_re,w_squared):
+    for line in output_re:
+        line = line.replace("\n","")
+        docid = line.split("\t")[0]
+        line = line.split("\t")[1]
+        term = line.split()[0]
+        nk = line.split()[2]
+        tf = line.split()[1]
+        N = line.split()[3]
+        tf = int(tf)
+        N = int(N)
+        nk = int(nk)
+        idf  = math.log10(N/nk)
+        print(f"{term} {docid} \t {idf} {tf} {w_squared}")
     return 0
 
 
@@ -38,9 +58,11 @@ def keyfunc(line):
 
 def main():
     """Divide sorted lines into groups that share a key."""
-    count = 0
+    w_squared = 0
     for key, group in itertools.groupby(sys.stdin, keyfunc):
-        reduce_one_group(key, group)
+        output_re = []
+        w_squared = calculate_w(key,group,output_re)
+        reduce_one_group( output_re,w_squared)
     # print(count)
 
 

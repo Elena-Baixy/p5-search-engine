@@ -39,7 +39,7 @@ for termid in combined:
     value = (combined[termid].split(" ",1))[1]
     docid = (value.split(" ",1))[0]
     key = int(docid) % 3
-    print(f"{key} \t {term} {value}")
+    print(f"{key}\t{term} {value}")
 
     #key = int(line.split()[2]) % 3
     

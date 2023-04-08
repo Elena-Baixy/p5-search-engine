@@ -15,16 +15,17 @@ def order(key, group,combined):
     group = list(group)
     for line in group:
         line = line.replace("\n","")
-        line = line.replace("\t ","")
-        key = line.split(" ",1)[0]
-        line = line.split(" ",1)[1].strip() # docid, idf ...
+        #line = line.replace("\t ","")
+        key = line.split("\t")[0]
+        line = line.split("\t")[1]
         term = line.split(" ",1)[0]
         value = line.split(" ",2)[2]
         term_pair = key + " " + term
         if term_pair not in combined:
             combined[term_pair] = line
         else:
-            combined[term_pair] = combined[term_pair] + " " +value
+            combined[term_pair] = combined[term_pair] + " " + value
+        # print(term_pair + " " + combined[term_pair] + " " +value)
 
 def reduce_one_group(key,group,combined):
     group = list(group)

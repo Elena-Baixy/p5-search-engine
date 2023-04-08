@@ -24,10 +24,10 @@ def reduce_one_group(key, group):
         term, docid, tf, N = line.split()
         N = int(N)
         tf = int (tf)
-        idf  = math.log10(N/nk)
-        w = tf * idf
-        w_squared = w * w
-        print(f"{docid} \t {term} {tf} {idf} {w_squared} ")
+        # idf  = math.log10(N/nk)
+        # w = tf * idf
+        # w_squared = w * w
+        print(f"{docid}\t{term} {tf} {nk} {N} ")
     return 0
 
 
