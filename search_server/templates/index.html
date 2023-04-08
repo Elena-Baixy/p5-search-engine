@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    ...
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+      <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+      <div class="ask485"><title>ask485</title></div>
+    ...
+  </head>
+  <!-- <div class="feed"> NOT Sure whether it means that we need to enclose just body or head and body -->
+  <body>
+    <div class="feed">
+    <!--title implemented -->
+    <div class="ask485"><title>ask485</title></div>
+    <!--Search bar, slider for pagerank_weight implemented -->
+    <div class="search_bar">
+      <form action="/" method="GET">
+        <div><input type="text" name="q" value="{{ query }}" /></div>
+        <div><input type="range" name="w" min="0" max="1" step="0.01" value="{{ weight }}" /></div>
+        <input type="submit" value="Search"/>
+      </form>
+    </div>
+    <div class="pagerank_weight">Pagerank Weight</div>
+
+    <!--Show the search results -->
+    <div class="docs">
+      {% if results %}
+        {% for result in results %}
+          <div class="doc_title">{{ result.title }}</div>
+          <a class="doc_url" href="{{ result.url }}"> {{ result.url if result.url else 'No url available' }} </a>
+          <div class="doc_summary">{{ result.summary if result.summary else 'No summary available' }}</div>
+        {% endfor %}
+      {% else %}
+        <div class="no_results">No search results found!</div>
+      {% endif %}
+    </div>
+
+
+       
+  </div>
+  </body>
+</html>
