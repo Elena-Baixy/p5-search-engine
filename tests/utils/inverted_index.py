@@ -105,6 +105,8 @@ def assert_inverted_index_line_eq(line1, line2, debug_info=""):
     debug_info += (
         f"term1 = {term1}\n"
         f"term2 = {term2}\n"
+        f"hit1 = {items1[2:]}\n"
+        f"hit1 = {items2[2:]}\n"
     )
     assert term1 == term2, f"Term mismatch:\n{debug_info}"
 
@@ -139,6 +141,7 @@ def assert_inverted_index_hit_eq(hit1, hit2, debug_info=""):
         "\n"
         f"doc_id1 = {doc_id1}\n"
         f"doc_id2 = {doc_id2}\n"
+        #f"hit1 = {hit1}\n"
     )
     assert doc_id1 == doc_id2, f"doc_id mismatch:\n{debug_info}"
 

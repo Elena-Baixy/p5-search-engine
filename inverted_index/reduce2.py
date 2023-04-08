@@ -20,8 +20,11 @@ def reduce_one_group(key, group):
     count = 0
     nk = len(group)
     for line in group:
-        # print(line)
-        term, docid, tf, N = line.split()
+        line = line.replace("\t"," ")
+        term = line.split(" ")[0]
+        docid = line.split(" ")[1]
+        tf = line.split(" ")[2]
+        N = line.split(" ")[3]
         N = int(N)
         tf = int (tf)
         # idf  = math.log10(N/nk)

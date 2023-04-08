@@ -13,8 +13,7 @@ import sys
 # {term} {docid} \t {idf} {tf} {normalization_factor} -> {docid} {tf} {di}
 combined = {}
 for line in sys.stdin:
-    line = line.replace(" \t ",",")
-    termid,value = line.split(",")
+    termid,value = line.split("\t")
     value = value.replace("\n","")
     idf = (value.split(" ",1))[0]
     value = (value.split(" ",1))[1]

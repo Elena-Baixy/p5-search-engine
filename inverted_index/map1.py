@@ -49,7 +49,7 @@ def bound(tuple_word):
         id_word.update(new_dict)
     #pprint(id_word)
     for (docid,term),tf in id_word.items():
-        print(f"{docid} {term} \t {tf}")
+        print(f"{docid} {term}\t{tf}")
 
 tuple_word = clean()
 bound(tuple_word)

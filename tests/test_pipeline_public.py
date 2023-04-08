@@ -348,9 +348,9 @@ def test_sample_inverted_index(tmp_path):
         "itselfbetteshanger",
         "lindros",
         "medicinefradd",
-        "smelting",
         "mindesert",
-        "regresar"
+        "regresar",
+        "smelting",
     ]
 
     # Verify inverted index file are copied to
@@ -371,7 +371,6 @@ def test_sample_inverted_index(tmp_path):
 
     # Compare filtered student inverted index files in tmp directory to
     # instructor solution inverted index
-    utils.assert_inverted_index_eq(tmp_path, TESTDATA_DIR/"test_pipeline15")
     utils.assert_inverted_index_eq(tmp_path, TESTDATA_DIR/"test_pipeline15")
 
 

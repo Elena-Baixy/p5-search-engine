@@ -17,11 +17,11 @@ def reduce_one_group(key, group,total_docu_count):
     group = list(group)
     for line in group:
         line = line.replace("\n","")
-        line = line.replace("\t ","")
+        line = line.replace("\t"," ")
         doc_id = line.split(" ")[0]
         term = line.split(" ")[1]
         tf = line.split(" ")[2]
-    print(f"{doc_id} {term} \t {tf} {total_docu_count}")
+    print(f"{doc_id} {term}\t{tf} {total_docu_count}")
     return 0
 
 
