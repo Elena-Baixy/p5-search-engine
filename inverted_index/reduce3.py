@@ -46,7 +46,7 @@ def reduce_one_group(output_re,w_squared):
         N = int(N)
         nk = int(nk)
         idf  = math.log10(N/nk)
-        print(f"{term} {docid}\t{idf} {tf} {w_squared}")
+        print(f"{term},{idf}\t{docid} {tf} {w_squared}")
     return 0
 
 

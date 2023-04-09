@@ -60,6 +60,13 @@ madoop \
 # Job 4
 madoop \
   -input output3 \
-  -output output \
+  -output output4 \
   -mapper ./map4.py \
   -reducer ./reduce4.py
+
+# Job 5
+madoop \
+  -input output4 \
+  -output output \
+  -mapper ./map5.py \
+  -reducer ./reduce5.py
