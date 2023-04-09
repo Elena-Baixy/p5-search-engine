@@ -1,4 +1,3 @@
-#!/bin/bash
 
 set -Eeuo pipefail
 
@@ -17,7 +16,12 @@ case $1 in
             echo "Error: index server is already running"
             exit 1
         else
-            echo "starting index server ..."
+            echo "starting index server ...
+            + mkdir -p var/log
+            + rm -f var/log/index.log
+            + INDEX_PATH="inverted_index_0.txt" flask --app index run --host 0.0.0.0 --port 9000 >> var/log/index.log 2>&1 &
+            + INDEX_PATH="inverted_index_1.txt" flask --app index run --host 0.0.0.0 --port 9001 >> var/log/index.log 2>&1 &
+            + INDEX_PATH="inverted_index_2.txt" flask --app index run --host 0.0.0.0 --port 9002 >> var/log/index.log 2>&1 &"
             mkdir -p var/log
             rm -f var/log/index.log
             INDEX_PATH="inverted_index_0.txt" flask --app index run --host 0.0.0.0 --port 9000 >> var/log/index.log 2>&1 &
@@ -27,14 +31,20 @@ case $1 in
     ;;
 
     "stop")
-        echo "stopping index server..."
+        echo "stopping index server...
+        + pkill -f "flask --app index run --host 0.0.0.0 --port 9000" || true
+        + pkill -f "flask --app index run --host 0.0.0.0 --port 9001" || true
+        + pkill -f "flask --app index run --host 0.0.0.0 --port 9002" || true"
         pkill -f "flask --app index run --host 0.0.0.0 --port 9000" || true
         pkill -f "flask --app index run --host 0.0.0.0 --port 9001" || true
         pkill -f "flask --app index run --host 0.0.0.0 --port 9002" || true
     ;;
 
     "restart") #stop and then start
-        echo "stopping index server..."
+        echo "stopping index server...
+        + pkill -f "flask --app index run --host 0.0.0.0 --port 9000" || true
+        + pkill -f "flask --app index run --host 0.0.0.0 --port 9001" || true
+        + pkill -f "flask --app index run --host 0.0.0.0 --port 9002" || true"
         pkill -f "flask --app index run --host 0.0.0.0 --port 9000" || true
         pkill -f "flask --app index run --host 0.0.0.0 --port 9001" || true
         pkill -f "flask --app index run --host 0.0.0.0 --port 9002" || true
@@ -51,7 +61,12 @@ case $1 in
             echo "Error: index server is already running"
             exit 1
         else
-            echo "starting index server ..."
+            echo "starting index server ...
+            + mkdir -p var/log
+            + rm -f var/log/index.log
+            + INDEX_PATH="inverted_index_0.txt" flask --app index run --host 0.0.0.0 --port 9000 >> var/log/index.log 2>&1 &
+            + INDEX_PATH="inverted_index_1.txt" flask --app index run --host 0.0.0.0 --port 9001 >> var/log/index.log 2>&1 &
+            + INDEX_PATH="inverted_index_2.txt" flask --app index run --host 0.0.0.0 --port 9002 >> var/log/index.log 2>&1 &"
             mkdir -p var/log
             rm -f var/log/index.log
             INDEX_PATH="inverted_index_0.txt" flask --app index run --host 0.0.0.0 --port 9000 >> var/log/index.log 2>&1 &
