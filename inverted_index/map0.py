@@ -14,7 +14,7 @@ def count():
     csv_reader = csv.reader(sys.stdin)
     rows = list(csv_reader)
     length = len(rows)
-    print(length)
+    print(f"{1} \t {length}")
     # 直接print就行 reduce stage 会read stdin，pipeline.sh会帮print的搬到output dir去
 
     # with open('output0/total_document_count.txt', 'w') as output_file:

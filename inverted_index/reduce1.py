@@ -12,32 +12,16 @@ from collections import Counter
 
 
 
-def reduce_one_group(key, group):
+def reduce_one_group(key, group,total_docu_count):
+    """Format {docid} {token}\t {total_docu_count}"""
     group = list(group)
-
-    id_word = {}
-    # print(key)
-    
     for line in group:
-        # of format {docid} {token}\t {total_docu_count}
-        
-        docid = line.split()[0]
-        term = line.split()[1]
-        total_docu_count = line.split()[2]
-
-        docid, term, total_docu_count =  line.split()
-        doc_term = (docid,term)
-
-        if doc_term in id_word.keys():
-            id_word[doc_term] +=1
-        else:
-            id_word[doc_term] = 1
-
-    # print(id_word)
-    for key,tf in id_word.items():
-        docid = key[0]
-        term = key[1]
-        print(f"{docid} {term} \t {tf} {total_docu_count}")
+        line = line.replace("\n","")
+        line = line.replace("\t"," ")
+        doc_id = line.split(" ")[0]
+        term = line.split(" ")[1]
+        tf = line.split(" ")[2]
+    print(f"{doc_id} {term}\t{tf} {total_docu_count}")
     return 0
 
 
@@ -50,8 +34,10 @@ def keyfunc(line):
 def main():
     """Divide sorted lines into groups that share a key."""
     count = 0
+    with open('total_document_count.txt', 'r') as file:
+        total_docu_count = file.readline().strip()
     for key, group in itertools.groupby(sys.stdin, keyfunc):
-        reduce_one_group(key, group)
+        reduce_one_group(key, group, total_docu_count)
     # print(count)
 
 

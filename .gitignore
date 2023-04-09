@@ -77,3 +77,6 @@ files_for_autograder_io/
 # Google Drive and Dropbox
 Icon
 .dropbox*
+index_server/index/inverted_index/inverted_index_0.txt
+index_server/index/inverted_index/inverted_index_1.txt
+index_server/index/inverted_index/inverted_index_2.txt

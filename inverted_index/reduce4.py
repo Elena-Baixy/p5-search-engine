@@ -8,26 +8,29 @@ https://github.com/eecs485staff/madoop/blob/main/README_Hadoop_Streaming.md
 """
 import sys
 import itertools
+import math
 from collections import Counter
 
 
 
 def reduce_one_group(key, group):
     group = list(group)
+    combined = ''
     for line in group:
-        # print(line)
-        docid, term, idf, tf, normalization_factor = line.split()
-        # print(term)
-        print(f"{term} {idf} {docid} {tf} {normalization_factor}")
+        line = line.replace('\n','')
+        term = line.split("\t")[0]
+        idf_dc_tf_norm = line.split("\t")[1]
+        idf = idf_dc_tf_norm.split(" ",1)[0]
+        dc_tf_norm = idf_dc_tf_norm.split(" ",1)[1]
+        #print(dc_tf_norm)
+        combined += " " + dc_tf_norm
+    print(f"{term} {idf}\t{combined}")
     return 0
 
 
 def keyfunc(line):
     """Return the key from a TAB-delimited key-value pair."""
-    #group by doc_i
-    
-    # term_idf_tf_norm = line.partition("\t")[2].strip()
-    # term = term_idf_tf_norm.split()[0]
+    #group by doc_id
     return line.partition("\t")[0]
 
 

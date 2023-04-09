@@ -10,9 +10,10 @@ csv.field_size_limit(sys.maxsize)
 
 import sys
 
+
+# {term},{idf} \t {docid} {tf} {normalization_factor} -> {docid} {tf} {di}
 for line in sys.stdin:
-    # print (f"{line.split()[0]} {line.split()[1]} \t {line.split()[2]} {line.split()[3]} {line.split()[4]}")
-    key = int(line.split()[2]) % 3
-    
-    # print(key)
-    print (f"{key} \t {line.split()[0]}  {line.split()[1]} {line.split()[3]} {line.split()[4]}")
+    line = line.replace("\t"," ").replace("\n","")
+    term = line.split(",",1)[0]
+    idf_dc_tf_nrom = line.split(",",1)[1]
+    print(f"{term}\t{idf_dc_tf_nrom}")
