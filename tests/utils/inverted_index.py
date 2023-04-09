@@ -68,8 +68,8 @@ def assert_inverted_index_file_eq(path1, path2):
     # Verify correct number of terms
     assert len(lines1) == len(lines2), (
         f"Number of lines mismatch:\n"
-        f"path1 = {str(path1)}\n"
-        f"path2 = {str(path2)}\n"
+        f"lines1 = {str(lines1)}\n"
+        f"lines2 = {str(lines2)}\n"
         f"len(lines1) = {len(lines1)}\n"
         f"len(lines2) = {len(lines2)}\n"
     )
@@ -83,6 +83,8 @@ def assert_inverted_index_line_eq(line1, line2, debug_info=""):
     """
     line1 = line1.strip()
     line2 = line2.strip()
+    print(f"line1 {line1}")
+    print(f"line2 {line2}")
     items1 = line1.split()
     items2 = line2.split()
 
