@@ -1,5 +1,8 @@
 # ...
 from flask import Flask
+import flask
+import re
+import index
 
 # import index.api  # noqa: E402  pylint: disable=wrong-import-position
 
@@ -30,7 +33,7 @@ def load_index():
             line = line.replace("\n","")
             inverted_index_0.append(line)
 
-@route('/api/v1/')
+@index.app.route('/api/v1/')
 def get_service():
     """Get all service."""
     context ={
@@ -40,7 +43,7 @@ def get_service():
     return flask.jsonify(**context)
 
 
-@route('/api/v1/hits/')
+@index.app.route('/api/v1/hits/')
 def get_doc_hits():
     # index.api.load_index()
     stopwords_list =[]
@@ -92,7 +95,7 @@ def get_doc_hits():
                     norm = inverted_index.split()[i+2]
                     if (docid not in doctfnorm_terms):
                         doctfnorm_terms[docid] = [(term,tf,idf,norm)]
-                    else if docid in doctfnorm_terms:
+                    elif docid in doctfnorm_terms:
                         doctfnorm_terms[docid].append((term,tf,idf,norm))
 
     #intersection : (term1: [(docid1,tf,idf,norm), (docid2,tf,idf,norm), ]
