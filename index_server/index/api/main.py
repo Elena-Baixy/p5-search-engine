@@ -96,8 +96,9 @@ def query_vector(filtered_query,idf_list):
         q_vector_list[term] = count*float(idf_list[term])
     return q_vector_list
                 
-
-
-
-    
+def dot_product(vec1,vec2):
+    """Calculate dot product."""
+    if len(vec1) != len(vec2):
+        return 0
+    return sum(float(i[0]) * float(i[1]) for i in zip(vec1, vec2))
 
