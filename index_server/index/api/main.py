@@ -1,98 +1,100 @@
-# ...
+import flask
+import re
+import index
+import os
 from flask import Flask
 
-# import index.api  # noqa: E402  pylint: disable=wrong-import-position
-
-# Load inverted index, stopwords, and pagerank into memory
-# index.api.load_index()
-
-def load_index():
+# Tips: 没有交集则要return no search result
+# 若出现两遍相同词汇则frequency增加，而不是增加term
+ 
+def query_cleaning(query):
+    '''Load index and clean.'''
     stopwords_list =[]
-    filtered_query = []
+    filtered_query = {}
     with open("stopwords.txt", "r") as stopwords:
         for line in stopwords:
             line = line.replace("\n","")
             stopwords_list.append(line)
-
-    query = flask.request.args.get("q")
     query = re.sub(r"[^a-zA-Z0-9 ]+", "", query)
     query = query.replace("  "," ")
     query = query.casefold()
     query = query.strip()
     tokens = query.split(" ")
-    for token in tokens:
+    for token in tokens: #count tokens in query
         if token not in stopwords_list:
-            filtered_query.append(token)
+            if filtered_query.get(token):
+                filtered_query[token] = 1
+            else:
+                filtered_query[token] += 1
+    return filtered_query
 
-    inverted_index_0 = []
-    with open("inverted_index/inverted_index_0.txt", "r") as stopwords:
-        for line in inverted_index_0:
-            line = line.replace("\n","")
-            inverted_index_0.append(line)
-
-@route('/api/v1/')
+@index.app.route('/api/v1/')
 def get_service():
     """Get all service."""
     context ={
-    "hits": "/api/v1/hits/",
-    "url": "/api/v1/"
+        "hits": "/api/v1/hits/",
+        "url": "/api/v1/"
     }
-    return flask.jsonify(**context)
+    return flask.jsonify(**context),200
 
-
-@route('/api/v1/hits/')
+@index.app.route('/api/v1/hits/')
 def get_doc_hits():
-    # index.api.load_index()
-    stopwords_list =[]
-    filtered_query = []
-    pagerank = {}
-    with open("stopwords.txt", "r") as stopwords:
-        for line in stopwords:
-            line = line.replace("\n","")
-            stopwords_list.append(line)
-    
-    with open("pagerank.out", "r") as pagerank:
-        for line in pagerank:
-            docid, rank = line.split()
-            pagerank[docid] = rank
-
-    inverted_index_0 = []
-    with open("inverted_index/inverted_index_0.txt", "r") as stopwords:
-        for line in inverted_index_0:
-            line = line.replace("\n","")
-            inverted_index_0.append(line)
-
     query = flask.request.args.get("q")
-    query = re.sub(r"[^a-zA-Z0-9 ]+", "", query)
-    query = query.replace("  "," ")
-    query = query.casefold()
-    query = query.strip()
-    tokens = query.split(" ")
-    for token in tokens:
-        if token not in stopwords_list:
-            filtered_query.append(token)
+    filtered_query = query_cleaning(query)
+    output_doc, term_tf = find_doc(filtered_query)
+    doc_vector(filtered_query,output_doc,term_tf)
+
+def find_doc(filtered_query):
+    '''Find the doc that containes the query.'''
+    intersect_list ={}
+    output_doc = []
+    term_tf = {}
+    default_filename = os.getenv("INDEX_PATH", "inverted_index_1.txt")
+    file_to_find = "index_server/index/inverted_index/" + default_filename
+    for (term,count) in filtered_query:
+        tf_list = {}
+        with open(file_to_find,'r') as inverted_index_file:
+            for line in inverted_index_file:
+                term_read = line.split(" ")[0]
+                if (term == term_read):
+                    idf = line.split()[1]
+                    doc_count = (len(line.split()) - 2)/3 #这个term出现在多少个file里
+                    for i in range(2,len(line.split() - 1), 3):
+                        if intersect_list.get(line.split()[i]):
+                            intersect_list[line.split()[i]] += 1
+                        else:
+                            intersect_list[line.split()[i]] = 1
+                            tf_list[[line.split()[i]]] = line.split()[i+1]
+        
+        term_tf[term] = tf_list
+    for doc,count_doc in intersect_list.items():
+        if doc == len(filtered_query):
+            output_doc.append(doc)
+    return output_doc,term_tf
     
-    all_terms = []
-    for word in filtered_query:
-        for inverted_index in inverted_index_0:
-            if (word == inverted_index.split()[0]):
-                idf = inverted_index.split()[1]
-                doc_count = (len(inverted_index.split()) - 2)/3
-                doctfnorm_terms = []
-                for i in range(2,len(inverted_index.split() - 1, 3):
-                    docid = inverted_index.split()[i]
-                    tf = inverted_index.split()[i+1]
-                    norm = inverted_index.split()[i+2]
-                    doctfnorm_terms.append((docid,tf,norm)))
-            all_terms.append(doctfnorm_terms)
-    
-    intersection = set(doctfnorm_terms[0])
-    for lst in all_docid[1:]:
-        intersection.intersection_update(item1 for item1, item2 in lst)
-    #TODO check intersection is empty
+def doc_vector(filtered_query,output_doc,term_tf):
+    '''calculated query vector'''
+    default_filename = os.getenv("INDEX_PATH", "inverted_index_1.txt")
+    file_to_find = "index_server/index/inverted_index/" + default_filename
+    d_vector_list = {}
+    idf_list = {}
+    for doc in output_doc:
+        for (term,count) in filtered_query:
+            with open(file_to_find,'r') as inverted_index_file:
+                for line in inverted_index_file:
+                    term_read = line.split(" ")[0]
+                    if (term == term_read):
+                        idf = line.split()[1]
+                        idf_list[term] = idf
+            for tf_list in term_tf[term]:
+                d_vector_list[doc] += float(tf_list[doc])*float(idf)
+    return d_vector_list,idf_list
 
-
-
+def query_vector(filtered_query,idf_list):
+    q_vector_list = {}
+    for (term,count) in filtered_query:
+        q_vector_list[term] = count*float(idf_list[term])
+    return q_vector_list
                 
 
 
