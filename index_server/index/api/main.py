@@ -69,7 +69,8 @@ def get_doc_hits():
     weight = flask.request.args.get("w", default=0.5)
     filtered_query = query_cleaning(query)
     output_doc, term_tf = find_doc(filtered_query)
-    doc_vector(filtered_query,output_doc,term_tf)
+    d_vector_list, idf_list = doc_vector(filtered_query,output_doc,term_tf)
+    
 
 def find_doc(filtered_query):
     '''Find the doc that containes the query.'''
@@ -85,18 +86,21 @@ def find_doc(filtered_query):
                 term_read = line.split(" ")[0]
                 if (term == term_read):
                     idf = line.split()[1]
+                    print("idf", idf)
+                    print("term_read", term_read)
                     doc_count = (len(line.split()) - 2)/3 #这个term出现在多少个file里
                     for i in range(2,len(line.split()) - 1, 3):
                         if intersect_list.get(line.split()[i]):
                             intersect_list[line.split()[i]] += 1
                         else:
                             intersect_list[line.split()[i]] = 1
-                            tf_list[[line.split()[i]]] = line.split()[i+1]
-        
+                            tf_list[line.split()[i]] = line.split()[i+1]
         term_tf[term] = tf_list
     for doc,count_doc in intersect_list.items():
-        if doc == len(filtered_query):
+        if count_doc == len(filtered_query):
             output_doc.append(doc)
+    print("output_doc", output_doc)
+    print("term_tf", term_tf)
     return output_doc,term_tf
     
 def doc_vector(filtered_query,output_doc,term_tf):
@@ -108,21 +112,29 @@ def doc_vector(filtered_query,output_doc,term_tf):
     d_vector_list = {}
     idf_list = {} #{term: idf} 每个term都只有一个idf
     for doc in output_doc:
-        for (term,count) in filtered_query:
+        for term,count in filtered_query.items():
             with open(file_to_find,'r') as inverted_index_file:
                 for line in inverted_index_file:
                     term_read = line.split(" ")[0]
                     if (term == term_read):
                         idf = line.split()[1]
                         idf_list[term] = idf
-            for tf_list in term_tf[term]:
-                d_vector_list[doc] += float(tf_list[doc])*float(idf)
+            for tf_list in term_tf[term].items():
+                if d_vector_list.get(doc) == None:
+                    d_vector_list[doc] = [float(tf_list[1])*float(idf)]
+                else: 
+                    d_vector_list[doc].append(float(tf_list[1])*float(idf))
+    print("d_vector_list", d_vector_list)
+    print("idf_list", idf_list)
     return d_vector_list,idf_list
 
 def query_vector(filtered_query,idf_list):
     q_vector_list = {}
-    for (term,count) in filtered_query:
-        q_vector_list[term] = count*float(idf_list[term]) #query的frequency * idf
+    for term, count in filtered_query.items():
+        if q_vector_list.get(term) == None:
+            q_vector_list[term] = [count*float(idf_list[term])] #query的frequency * idf
+        else:
+            q_vector_list[term].append(count*float(idf_list[term]))
     return q_vector_list
                 
 def dot_product(vec1,vec2):
@@ -130,6 +142,10 @@ def dot_product(vec1,vec2):
     if len(vec1) != len(vec2):
         return 0
     return sum(float(i[0]) * float(i[1]) for i in zip(vec1, vec2))
+
+def tf_idf_score(d_vector_list, idf_list, q_vector_list):
+    for i in d_vector_list:
+
 
 
 
