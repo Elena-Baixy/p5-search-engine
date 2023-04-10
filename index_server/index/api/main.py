@@ -70,9 +70,9 @@ def get_doc_hits():
 
 def find_doc(filtered_query):
     '''Find the doc that containes the query.'''
-    intersect_list ={}
-    output_doc = []
-    term_tf = {}
+    intersect_list ={} #docid:count 如果不是交集，那么count就不会等于term的个数
+    output_doc = [] #交集里的docid
+    term_tf = {} #term : {docid: tf} 用于在doc_vector里找 这个交集的docid的tf，for term -》 for output_doc
     default_filename = os.getenv("INDEX_PATH", "inverted_index_1.txt")
     file_to_find = "index_server/index/inverted_index/" + default_filename
     for (term,count) in filtered_query:
@@ -97,11 +97,13 @@ def find_doc(filtered_query):
     return output_doc,term_tf
     
 def doc_vector(filtered_query,output_doc,term_tf):
-    '''calculated query vector'''
+    '''Calculate doc vector. doc_list should be docid : term1:tf*idf, term2:... / docid
+    This structure is complicated need to be changed
+    may be can directly calculated tf-idf'''
     default_filename = os.getenv("INDEX_PATH", "inverted_index_1.txt")
     file_to_find = "index_server/index/inverted_index/" + default_filename
     d_vector_list = {}
-    idf_list = {}
+    idf_list = {} #{term: idf} 每个term都只有一个idf
     for doc in output_doc:
         for (term,count) in filtered_query:
             with open(file_to_find,'r') as inverted_index_file:
@@ -117,7 +119,7 @@ def doc_vector(filtered_query,output_doc,term_tf):
 def query_vector(filtered_query,idf_list):
     q_vector_list = {}
     for (term,count) in filtered_query:
-        q_vector_list[term] = count*float(idf_list[term])
+        q_vector_list[term] = count*float(idf_list[term]) #query的frequency * idf
     return q_vector_list
                 
 def dot_product(vec1,vec2):
