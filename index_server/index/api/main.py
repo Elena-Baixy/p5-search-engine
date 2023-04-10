@@ -8,7 +8,7 @@ from flask import Flask
 # Tips: 没有交集则要return no search result
 # 若出现两遍相同词汇则frequency增加，而不是增加term
 
-# load index似乎是把那些file放在正确的位置上
+# load index似乎是把那些file放在正确的位置上,然后放在memory上，但是我不理解的是如果我们直接在每次用的时候再放在memory里不是会更好吗？
 def load_index():
     "load the file into correct place"
     if not os.path.exists("index_server/index/stopwords.txt"):
@@ -17,16 +17,18 @@ def load_index():
     inverted_index_folder = "index_server/index/inverted_index"
     if not os.path.exists("index_server/index/inverted_index"):
         os.mkdir(inverted_index_folder)
-    # 好像不需要check?
-    # if not os.path.exists("inverted_index/output"):
-    #     os.mkdir("inverted_index/output")
-    output_files = sorted(os.listdir("inverted_index/output"))
-    number = 0
-    for output_file in output_files:
-        output_file_path = os.path.join("inverted_index/output", output_file)
-        inverted_index_file = "inverted_index_" + str(number) + ".txt"
-        shutil.copy(output_file_path, "index_server/index/inverted_index" + inverted_index_file)
-        number += 1
+
+    # 这些暂时先comment掉说不定以后需要放回来
+    # # 好像不需要check?
+    # # if not os.path.exists("inverted_index/output"):
+    # #     os.mkdir("inverted_index/output")
+    # output_files = sorted(os.listdir("inverted_index/output"))
+    # number = 0
+    # for output_file in output_files:
+    #     output_file_path = os.path.join("inverted_index/output", output_file)
+    #     inverted_index_file = "inverted_index_" + str(number) + ".txt"
+    #     shutil.copy(output_file_path, "index_server/index/inverted_index" + inverted_index_file)
+    #     number += 1
     
 
  
@@ -34,7 +36,7 @@ def query_cleaning(query):
     '''Load index and clean.'''
     stopwords_list =[]
     filtered_query = {}
-    with open("stopwords.txt", "r") as stopwords:
+    with open("inverted_index/stopwords.txt", "r", encoding = 'utf-8') as stopwords:
         for line in stopwords:
             line = line.replace("\n","")
             stopwords_list.append(line)
@@ -45,10 +47,11 @@ def query_cleaning(query):
     tokens = query.split(" ")
     for token in tokens: #count tokens in query
         if token not in stopwords_list:
-            if filtered_query.get(token):
+            if filtered_query.get(token) == None:
                 filtered_query[token] = 1
             else:
                 filtered_query[token] += 1
+    print(filtered_query)
     return filtered_query
 
 @index.app.route('/api/v1/')
@@ -63,6 +66,7 @@ def get_service():
 @index.app.route('/api/v1/hits/')
 def get_doc_hits():
     query = flask.request.args.get("q")
+    weight = flask.request.args.get("w", default=0.5)
     filtered_query = query_cleaning(query)
     output_doc, term_tf = find_doc(filtered_query)
     doc_vector(filtered_query,output_doc,term_tf)
@@ -74,7 +78,7 @@ def find_doc(filtered_query):
     term_tf = {} #term : {docid: tf} 用于在doc_vector里找 这个交集的docid的tf，for term -》 for output_doc
     default_filename = os.getenv("INDEX_PATH", "inverted_index_1.txt")
     file_to_find = "index_server/index/inverted_index/" + default_filename
-    for (term,count) in filtered_query:
+    for term, count in filtered_query.items():
         tf_list = {}
         with open(file_to_find,'r') as inverted_index_file:
             for line in inverted_index_file:
@@ -82,7 +86,7 @@ def find_doc(filtered_query):
                 if (term == term_read):
                     idf = line.split()[1]
                     doc_count = (len(line.split()) - 2)/3 #这个term出现在多少个file里
-                    for i in range(2,len(line.split() - 1), 3):
+                    for i in range(2,len(line.split()) - 1, 3):
                         if intersect_list.get(line.split()[i]):
                             intersect_list[line.split()[i]] += 1
                         else:
