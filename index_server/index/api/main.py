@@ -2,34 +2,33 @@ import flask
 import re
 import index
 import os
+import shutil
 from flask import Flask
 
 # Tips: 没有交集则要return no search result
 # 若出现两遍相同词汇则frequency增加，而不是增加term
 
+# load index似乎是把那些file放在正确的位置上
 def load_index():
-    stopwords_list =[]
-    filtered_query = []
-    with open("stopwords.txt", "r") as stopwords:
-        for line in stopwords:
-            line = line.replace("\n","")
-            stopwords_list.append(line)
+    "load the file into correct place"
+    if not os.path.exists("index_server/index/stopwords.txt"):
+        shutil.copyfile('inverted_index/stopwords.txt',
+                        'index_server/index/stopwords.txt')
+    inverted_index_folder = "index_server/index/inverted_index"
+    if not os.path.exists("index_server/index/inverted_index"):
+        os.mkdir(inverted_index_folder)
+    # 好像不需要check?
+    # if not os.path.exists("inverted_index/output"):
+    #     os.mkdir("inverted_index/output")
+    output_files = sorted(os.listdir("inverted_index/output"))
+    number = 0
+    for output_file in output_files:
+        output_file_path = os.path.join("inverted_index/output", output_file)
+        inverted_index_file = "inverted_index_" + str(number) + ".txt"
+        shutil.copy(output_file_path, "index_server/index/inverted_index" + inverted_index_file)
+        number += 1
+    
 
-    query = flask.request.args.get("q")
-    query = re.sub(r"[^a-zA-Z0-9 ]+", "", query)
-    query = query.replace("  "," ")
-    query = query.casefold()
-    query = query.strip()
-    tokens = query.split(" ")
-    for token in tokens:
-        if token not in stopwords_list:
-            filtered_query.append(token)
-
-    inverted_index_0 = []
-    with open("inverted_index/inverted_index_0.txt", "r") as stopwords:
-        for line in inverted_index_0:
-            line = line.replace("\n","")
-            inverted_index_0.append(line)
  
 def query_cleaning(query):
     '''Load index and clean.'''

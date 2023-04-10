@@ -17,6 +17,8 @@ import index.api  # noqa: E402  pylint: disable=wrong-import-position
 index.api.load_index()
 
 import index.inverted_index
+# import index.pagerank
+# import index.stopwords
 
 
 
