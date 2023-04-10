@@ -3,6 +3,7 @@ import re
 import index
 import os
 import shutil
+import math
 from flask import Flask
 
 # Tips: 没有交集则要return no search result
@@ -70,6 +71,18 @@ def get_doc_hits():
     filtered_query = query_cleaning(query)
     output_doc, term_tf = find_doc(filtered_query)
     d_vector_list, idf_list = doc_vector(filtered_query,output_doc,term_tf)
+    q_vector = query_vector(filtered_query,idf_list)
+    normalized_q_vector = normalized_q(q_vector)
+    tf_idf_s = tf_idf_score(d_vector_list, normalized_q_vector, q_vector)
+    weighted_s = weighted_score(float(weight), tf_idf_s)
+    result = final_result(weighted_s)
+    context = {}
+    context["hits"] = result
+    print("result-----", result)
+    return flask.jsonify(**context), 200
+
+
+    
     
 
 def find_doc(filtered_query):
@@ -119,23 +132,21 @@ def doc_vector(filtered_query,output_doc,term_tf):
                     if (term == term_read):
                         idf = line.split()[1]
                         idf_list[term] = idf
-            for tf_list in term_tf[term].items():
-                if d_vector_list.get(doc) == None:
-                    d_vector_list[doc] = [float(tf_list[1])*float(idf)]
-                else: 
-                    d_vector_list[doc].append(float(tf_list[1])*float(idf))
+            tf_list = term_tf[term]
+            if d_vector_list.get(doc) == None:
+                d_vector_list[doc] = [float(tf_list[doc])*float(idf)]
+            else: 
+                d_vector_list[doc].append(float(tf_list[doc])*float(idf))
     print("d_vector_list", d_vector_list)
     print("idf_list", idf_list)
     return d_vector_list,idf_list
 
 def query_vector(filtered_query,idf_list):
-    q_vector_list = {}
+    q_vector = []
     for term, count in filtered_query.items():
-        if q_vector_list.get(term) == None:
-            q_vector_list[term] = [count*float(idf_list[term])] #query的frequency * idf
-        else:
-            q_vector_list[term].append(count*float(idf_list[term]))
-    return q_vector_list
+        q_vector.append(count*float(idf_list[term]))
+    print("q_vector_list   ", q_vector)
+    return q_vector
                 
 def dot_product(vec1,vec2):
     """Calculate dot product."""
@@ -143,8 +154,55 @@ def dot_product(vec1,vec2):
         return 0
     return sum(float(i[0]) * float(i[1]) for i in zip(vec1, vec2))
 
-def tf_idf_score(d_vector_list, idf_list, q_vector_list):
-    for i in d_vector_list:
+def normalized_q(q_vector):
+    normalized_q_vector = 0 # {term: normalization factor}
+    sum = 0
+    for i in q_vector:
+        sum += float(i) ** 2
+    normalized_q_vector = math.sqrt(sum)
+    return normalized_q_vector
+
+def tf_idf_score(d_vector_list, normalized_q_vector, q_vector):
+    "Calculate tf_idf_score"
+    normalized_d_vectors = {} # {term: normalization factor}
+    for doc, d_vector in d_vector_list.items():
+        sum = 0
+        for i in d_vector:
+            sum += float(i) ** 2
+        normalized_d_vectors[doc] = math.sqrt(sum)
+    # final tf_idf score:
+    tf_idf_s = {} 
+    for doc, d_vector in d_vector_list.items():
+        score = dot_product(q_vector, d_vector_list[doc])
+        score = score/(float(normalized_q_vector) * float(normalized_d_vectors[doc]))
+        tf_idf_s[doc] = score
+    return tf_idf_s
+
+def weighted_score(weight, tf_idf_s):
+    pagerank_rank = {}
+    weighted_s = {}
+    with open("index_server/index/pagerank.out", "r", encoding='utf-8') as pagerank:
+        for line in pagerank:
+            docid = line.split(",")[0]
+            rank = line.split(",")[1]
+            pagerank_rank[docid] = rank
+    for doc, tfidf in tf_idf_s.items():
+        weighted_s[doc] = float(float(weight) * float(pagerank_rank[doc]) + float(1 - weight) * float(tfidf))
+    return weighted_s
+
+def final_result(weighted_s):
+    result = []
+    sorted_weighted_s = {k: v for k, v in sorted(weighted_s.items(), key=lambda item: item[1])}
+    for doc, score in sorted_weighted_s.items():
+        item = {}
+        item["docid"] = int(doc)
+        item["score"] = score
+        result.append(item)
+    return result
+
+
+
+
 
 
 
