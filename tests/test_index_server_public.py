@@ -15,6 +15,7 @@ def test_multiple_terms(index_client):
     """
     # Query the REST API
     response = index_client.get("/api/v1/hits/?q=world+flags")
+    # response = index_client.get("/api/v1/hits/?q=michigan+wolverine")
     assert response.status_code == 200
 
     # Compare actual hits to solution hits

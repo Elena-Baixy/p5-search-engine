@@ -70,10 +70,15 @@ def get_doc_hits():
     weight = flask.request.args.get("w", default=0.5)
     filtered_query = query_cleaning(query)
     output_doc, term_tf = find_doc(filtered_query)
-    d_vector_list, idf_list = doc_vector(filtered_query,output_doc,term_tf)
+    d_vector_list, idf_list,d_norm_list = doc_vector(filtered_query,output_doc,term_tf)
+    print("d_vector_list-----",d_vector_list)
+    print("idf_list-----",idf_list)
     q_vector = query_vector(filtered_query,idf_list)
+    print("query_vector-----",q_vector)
     normalized_q_vector = normalized_q(q_vector)
-    tf_idf_s = tf_idf_score(d_vector_list, normalized_q_vector, q_vector)
+    print("normalized_q-----",normalized_q_vector)
+    tf_idf_s = tf_idf_score(d_vector_list, normalized_q_vector, q_vector, d_norm_list)
+    print("tf_idf_score-----",tf_idf_s)
     weighted_s = weighted_score(float(weight), tf_idf_s)
     result = final_result(weighted_s)
     context = {}
@@ -97,14 +102,17 @@ def find_doc(filtered_query):
         with open(file_to_find,'r') as inverted_index_file:
             for line in inverted_index_file:
                 term_read = line.split(" ")[0]
+
                 if (term == term_read):
-                    idf = line.split()[1]
-                    print("idf", idf)
+
                     print("term_read", term_read)
+                    idf = line.split()[1]
                     doc_count = (len(line.split()) - 2)/3 #这个term出现在多少个file里
                     for i in range(2,len(line.split()) - 1, 3):
                         if intersect_list.get(line.split()[i]):
                             intersect_list[line.split()[i]] += 1
+                            tf_list[line.split()[i]] = line.split()[i+1]
+                            # print("tf_list", tf_list)
                         else:
                             intersect_list[line.split()[i]] = 1
                             tf_list[line.split()[i]] = line.split()[i+1]
@@ -114,6 +122,7 @@ def find_doc(filtered_query):
             output_doc.append(doc)
     print("output_doc", output_doc)
     print("term_tf", term_tf)
+    print("intersect_list",intersect_list)
     return output_doc,term_tf
     
 def doc_vector(filtered_query,output_doc,term_tf):
@@ -121,8 +130,11 @@ def doc_vector(filtered_query,output_doc,term_tf):
     This structure is complicated need to be changed
     may be can directly calculated tf-idf'''
     default_filename = os.getenv("INDEX_PATH", "inverted_index_1.txt")
+    # TODO: changeback!!!!
     file_to_find = "index_server/index/inverted_index/" + default_filename
+    print("file_to_find",file_to_find)
     d_vector_list = {}
+    d_norm_list = {}
     idf_list = {} #{term: idf} 每个term都只有一个idf
     for doc in output_doc:
         for term,count in filtered_query.items():
@@ -132,20 +144,33 @@ def doc_vector(filtered_query,output_doc,term_tf):
                     if (term == term_read):
                         idf = line.split()[1]
                         idf_list[term] = idf
+                        for i in range (len(line.split())):
+                            if line.split()[i] == doc:
+                                d_norm_list[doc] = line.split()[i+2]
+                        
             tf_list = term_tf[term]
+            # print("term is", term, "tf_list is ", tf_list, "doc is ", doc)
             if d_vector_list.get(doc) == None:
                 d_vector_list[doc] = [float(tf_list[doc])*float(idf)]
+                
             else: 
                 d_vector_list[doc].append(float(tf_list[doc])*float(idf))
+           
+    print("d_norm_list",d_norm_list)
     print("d_vector_list", d_vector_list)
     print("idf_list", idf_list)
-    return d_vector_list,idf_list
+    return d_vector_list,idf_list,d_norm_list
 
 def query_vector(filtered_query,idf_list):
     q_vector = []
+    print("filtered_query",filtered_query)
+    print("idf_list",idf_list)
     for term, count in filtered_query.items():
-        q_vector.append(count*float(idf_list[term]))
-    print("q_vector_list   ", q_vector)
+        # print(term, count,(idf_list[term]))
+        if (idf_list.get(term)):
+            result = count * float(idf_list[term])
+            q_vector.append(result)
+    print("q_vector",q_vector)
     return q_vector
                 
 def dot_product(vec1,vec2):
@@ -162,20 +187,22 @@ def normalized_q(q_vector):
     normalized_q_vector = math.sqrt(sum)
     return normalized_q_vector
 
-def tf_idf_score(d_vector_list, normalized_q_vector, q_vector):
+def tf_idf_score(d_vector_list, normalized_q_vector, q_vector,d_norm_list):
     "Calculate tf_idf_score"
     normalized_d_vectors = {} # {term: normalization factor}
-    for doc, d_vector in d_vector_list.items():
-        sum = 0
-        for i in d_vector:
-            sum += float(i) ** 2
-        normalized_d_vectors[doc] = math.sqrt(sum)
+
+    # for doc, d_vector in d_vector_list.items():
+    #     sum = 0
+    #     for i in d_vector:
+    #         sum += float(i) ** 2
+    #     normalized_d_vectors[doc] = math.sqrt(sum)
     # final tf_idf score:
     tf_idf_s = {} 
     for doc, d_vector in d_vector_list.items():
         score = dot_product(q_vector, d_vector_list[doc])
-        score = score/(float(normalized_q_vector) * float(normalized_d_vectors[doc]))
+        score = score/(float(normalized_q_vector) * math.sqrt(float(d_norm_list[doc])))
         tf_idf_s[doc] = score
+    print(tf_idf_s)
     return tf_idf_s
 
 def weighted_score(weight, tf_idf_s):
@@ -192,12 +219,13 @@ def weighted_score(weight, tf_idf_s):
 
 def final_result(weighted_s):
     result = []
-    sorted_weighted_s = {k: v for k, v in sorted(weighted_s.items(), key=lambda item: item[1])}
+    sorted_weighted_s = {k: v for k, v in sorted(weighted_s.items(), key=lambda item: item[1], reverse=True)}
     for doc, score in sorted_weighted_s.items():
         item = {}
         item["docid"] = int(doc)
         item["score"] = score
         result.append(item)
+    # print(dict(result))
     return result
 
 
