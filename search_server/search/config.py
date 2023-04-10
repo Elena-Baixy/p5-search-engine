@@ -15,13 +15,6 @@ SEARCH_INDEX_SEGMENT_API_URLS = [
 # Root of this application, useful if it doesn't occupy an entire domain
 APPLICATION_ROOT = '/'
 
-
-# Secret key for encrypting cookies
-SECRET_KEY = b'\xc3\n>\xe7)\xfe#\xf3N\x83\x89\xc1\xd6\
-x89\xae4\xd0L\x9aI\x0e\xa6\xd2P'
-SESSION_COOKIE_NAME = 'login'
-
-
 # File Upload to var/uploads/
 SEARCH_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 UPLOAD_FOLDER = SEARCH_ROOT/'var'/'uploads'

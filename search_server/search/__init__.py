@@ -22,9 +22,7 @@ app.config.from_object('search.config')
 # circular import, which is naughty, but Flask was designed that way.
 # (Reference http://flask.pocoo.org/docs/patterns/packages/)  We're
 # going to tell pylint and pycodestyle to ignore this coding style violation.
+
+
 import search.views  # noqa: E402  pylint: disable=wrong-import-position
 import search.model  # noqa: E402  pylint: disable=wrong-import-position
-
-
-
-# from search.views.user import *  # noqa: E402  pylint: disable=wrong-import-position

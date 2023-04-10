@@ -5,7 +5,6 @@ URLs include:
 /
 """
 import flask
-from flask import send_from_directory
 import requests
 import threading
 import heapq
@@ -17,7 +16,7 @@ from queue import PriorityQueue
 
 # for index.html
 @search.app.route('/', methods=['GET'])
-def search():
+def search_result():
     # Get the query and weight from the index.html
     query = flask.request.args.get('q', '')
     weight = flask.request.args.get('w', '')
