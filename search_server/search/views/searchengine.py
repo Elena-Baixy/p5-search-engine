@@ -4,23 +4,19 @@ Insta485 index (main) view.
 URLs include:
 /
 """
-import os
-import uuid
-import hashlib
-import pathlib
 import flask
 from flask import send_from_directory
 import requests
 import threading
 import heapq
-import search_server
+import search
 import json
 import sqlite3
 from queue import PriorityQueue
 
 
 # for index.html
-@search_server.app.route('/', methods=['GET'])
+@search.app.route('/', methods=['GET'])
 def search():
     # Get the query and weight from the index.html
     query = flask.request.args.get('q', '')
@@ -43,7 +39,7 @@ def get_search_results(query, weight):
 
 
     # Create threads for concurrent requests
-    for url in SEARCH_INDEX_SEGMENT_API_URLS:
+    for url in search.app.config['SEARCH_INDEX_SEGMENT_API_URLS']:
         t = threading.Thread(target=fetch_results, args=(url, query, weight, results_queue))
         t.start()
         threads.append(t)
