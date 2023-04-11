@@ -22,8 +22,10 @@ def search_result():
     weight = flask.request.args.get('w', '')
 
     if query:
-        
-        results = get_search_results(query, weight)
+        if weight:
+            results = get_search_results(query, weight)
+        else:
+            results = get_search_results(query, weight = 0.5)
     else:
         results = []
 
