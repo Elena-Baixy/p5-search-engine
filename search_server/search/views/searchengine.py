@@ -35,13 +35,13 @@ def get_search_results(query, weight):
     "Get the data from index server and do a little processing"
 
     "Create a thread for each index server"
-    results_queue = PriorityQueue()
+    results_list = []
     threads = []
 
 
     # Create threads for concurrent requests
     for url in search.app.config['SEARCH_INDEX_SEGMENT_API_URLS']:
-        t = threading.Thread(target=fetch_results, args=(url, query, weight, results_queue))
+        t = threading.Thread(target=fetch_results, args=(url, query, weight, results_list))
         t.start()
         threads.append(t)
 
@@ -50,7 +50,7 @@ def get_search_results(query, weight):
         t.join()
 
     # Merge the results from different Index servers
-    merged_results = heapq.merge(*[results_queue.get() for _ in range(results_queue.qsize())], key=lambda x: x["score"], reverse=True)
+    merged_results = heapq.merge(*results_list, key=lambda x: x["score"], reverse=True)
 
     # Get the top 10 results (only docid and score)
     top_results = list(merged_results)[:10]
@@ -60,21 +60,19 @@ def get_search_results(query, weight):
 
     return processed_result
 
-
-def fetch_results(url, query, weight, results_queue):
+def fetch_results(url, query, weight, results_list):
     "call the index_server_url to get the results"
     if weight: 
         response = requests.get(f"{url}?q={query}&w={weight}")
     else: 
         response = requests.get(f"{url}?q={query}")
     if response.status_code == 200:
-        results_queue.put(response.json()["hits"])
-    return results_queue
+        results_list.append(response.json()["hits"])
 
 def process_result(top_results):
     "use docid to get the title, url, and summary"
     final_result =[]
-    conn = sqlite3.connect("search_server/search/sql/search.sql")
+    conn = sqlite3.connect(search.app.config['DATABASE_FILENAME'])
     cursor = conn.cursor()
     # result will be docid:1220, score:21032. We need to use the docid to get the title, summary, and url and then put it into the final results.
     for result in top_results:
@@ -82,6 +80,6 @@ def process_result(top_results):
         cursor.execute(f"SELECT docid, title, summary, url FROM documents WHERE docid == ?", (docid, ))
         info_results = cursor.fetchall()
         json_results = [{"title": row[1], "summary": row[2], "url": row[3]} for row in info_results]
-        final_result = final_result.append(json_results)
+        final_result.extend(json_results)
     
     return final_result
