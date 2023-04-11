@@ -18,6 +18,9 @@ from queue import PriorityQueue
 @search.app.route('/', methods=['GET'])
 def search_result():
     # Get the query and weight from the index.html
+    if (flask.request.args.get('q') is None
+       or flask.request.args.get('q') == "") :
+        return flask.render_template("index.html")
     query = flask.request.args.get('q', '')
     weight = flask.request.args.get('w', '')
 
@@ -29,7 +32,7 @@ def search_result():
     else:
         results = []
 
-    return flask.render_template('index.html', query=query, weight=weight, results=results)
+    return flask.render_template('searchresult.html', query=query, weight=weight, results=results)
 
 def get_search_results(query, weight):
     "Get the data from index server and do a little processing"
