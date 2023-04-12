@@ -6,8 +6,9 @@ import sys
 
 csv.field_size_limit(sys.maxsize)
 
+
 def count():
-    '''Job 0, calculate N.'''
+    """Job 0, calculate N."""
     csv_reader = csv.reader(sys.stdin)
     rows = list(csv_reader)
     length = len(rows)
@@ -17,5 +18,6 @@ def count():
     # with open('output0/total_document_count.txt', 'w') as output_file:
     #     output_file.write(str(length))
     return 0
+
 
 COUNT_NUM = count()

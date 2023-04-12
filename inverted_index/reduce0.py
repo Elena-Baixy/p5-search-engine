@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
-"""Reduce 0.
-Template reducer.
-https://github.com/eecs485staff/madoop/blob/main/README_Hadoop_Streaming.md
-"""
+
+"""Reduce0."""
 import sys
 import itertools
 
 
 def reduce_one_group(group):
-    '''I ma a doc.'''
+    """I ma a doc."""
     group = list(group)
     count = 0
     for row in group:
-        row = row.replace("\t ","")
-        row = row.replace("\n","")
+        row = row.replace("\t ", "")
+        row = row.replace("\n", "")
         num = row.split(" ")[1]
         count += int(num)
     print(count)
