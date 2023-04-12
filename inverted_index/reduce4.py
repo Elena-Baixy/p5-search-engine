@@ -8,12 +8,11 @@ https://github.com/eecs485staff/madoop/blob/main/README_Hadoop_Streaming.md
 """
 import sys
 import itertools
-import math
-from collections import Counter
 
 
 
-def reduce_one_group(key, group):
+def reduce_one_group( group):
+    '''I am a doc string.'''
     group = list(group)
     combined = ''
     for line in group:
@@ -36,9 +35,8 @@ def keyfunc(line):
 
 def main():
     """Divide sorted lines into groups that share a key."""
-    count = 0
-    for key, group in itertools.groupby(sys.stdin, keyfunc):
-        reduce_one_group(key, group)
+    for _, group in itertools.groupby(sys.stdin, keyfunc):
+        reduce_one_group(group)
     # print(count)
 
 

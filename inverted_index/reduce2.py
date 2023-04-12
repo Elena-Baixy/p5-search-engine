@@ -21,13 +21,13 @@ def reduce_one_group(group):
         term = line.split(" ")[0]
         docid = line.split(" ")[1]
         t_f = line.split(" ")[2]
-        N_doc = line.split(" ")[3]
-        N_doc = int(N_doc)
+        n_doc = line.split(" ")[3]
+        n_doc = int(n_doc)
         t_f = int (t_f)
         # idf  = math.log10(N/n_k)
         # w = t_f * idf
         # w_squared = w * w
-        print(f"{docid}\t{term} {t_f} {n_k} {N_doc} ")
+        print(f"{docid}\t{term} {t_f} {n_k} {n_doc} ")
     return 0
 
 

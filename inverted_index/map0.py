@@ -3,9 +3,6 @@
 """Map 0."""
 import csv
 import sys
-import re
-from collections import Counter
-from pprint import pprint
 
 csv.field_size_limit(sys.maxsize)
 
@@ -21,5 +18,4 @@ def count():
     #     output_file.write(str(length))
     return 0
 
-count_num = count()
-
+COUNT_NUM = count()

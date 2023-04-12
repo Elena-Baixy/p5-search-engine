@@ -8,11 +8,10 @@ https://github.com/eecs485staff/madoop/blob/main/README_Hadoop_Streaming.md
 """
 import sys
 import itertools
-from collections import Counter
 
 
 
-def reduce_one_group(key, group,total_docu_count):
+def reduce_one_group(group,total_docu_count):
     """Format {docid} {token}\t {total_docu_count}"""
     group = list(group)
     for line in group:
@@ -20,8 +19,8 @@ def reduce_one_group(key, group,total_docu_count):
         line = line.replace("\t"," ")
         doc_id = line.split(" ")[0]
         term = line.split(" ")[1]
-        tf = line.split(" ")[2]
-    print(f"{doc_id} {term}\t{tf} {total_docu_count}")
+        t_f = line.split(" ")[2]
+    print(f"{doc_id} {term}\t{t_f} {total_docu_count}")
     return 0
 
 
@@ -33,11 +32,10 @@ def keyfunc(line):
 
 def main():
     """Divide sorted lines into groups that share a key."""
-    count = 0
-    with open('total_document_count.txt', 'r') as file:
+    with open('total_document_count.txt', 'r',encoding='utf-8') as file:
         total_docu_count = file.readline().strip()
-    for key, group in itertools.groupby(sys.stdin, keyfunc):
-        reduce_one_group(key, group, total_docu_count)
+    for _, group in itertools.groupby(sys.stdin, keyfunc):
+        reduce_one_group(group, total_docu_count)
     # print(count)
 
 

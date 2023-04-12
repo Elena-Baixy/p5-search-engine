@@ -2,13 +2,8 @@
 """Map 0."""
 import csv
 import sys
-import re
-from collections import Counter
-from pprint import pprint
 
 csv.field_size_limit(sys.maxsize)
-
-import sys
 
 
 # {term},{idf} \t {docid} {tf} {normalization_factor} -> {docid} {tf} {di}

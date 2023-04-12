@@ -2,16 +2,10 @@
 """Map 3."""
 import csv
 import sys
-import re
-import math
-from collections import Counter
-from pprint import pprint
 
 csv.field_size_limit(sys.maxsize)
 
-import sys
-
-with open('total_document_count.txt', 'r') as file:
+with open('total_document_count.txt', 'r', encoding='utf-8') as file:
     N = file.readline().strip()
 
 for line in sys.stdin:

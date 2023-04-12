@@ -8,10 +8,10 @@ https://github.com/eecs485staff/madoop/blob/main/README_Hadoop_Streaming.md
 """
 import sys
 import itertools
-from collections import Counter
 
 
-def order(key, group,combined):
+def order(group,combined):
+    '''I am a doc.'''
     group = list(group)
     for line in group:
         line = line.replace("\n","")
@@ -27,7 +27,8 @@ def order(key, group,combined):
             combined[term_pair] = combined[term_pair] + " " + value
         # print(term_pair + " " + combined[term_pair] + " " +value)
 
-def reduce_one_group(key,group):
+def reduce_one_group(group):
+    '''I ma a doc.'''
     group = list(group)
     for line in group:
         line = line.replace("\n",'')
@@ -45,9 +46,9 @@ def keyfunc(line):
 def main():
     """Divide sorted lines into groups that share a key."""
     #combined = {}
-    for key, group in itertools.groupby(sys.stdin, keyfunc):
+    for _, group in itertools.groupby(sys.stdin, keyfunc):
         #order(key, group,combined)
-        reduce_one_group(key, group)
+        reduce_one_group(group)
     # print(count)
 
 

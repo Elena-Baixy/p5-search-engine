@@ -9,44 +9,43 @@ https://github.com/eecs485staff/madoop/blob/main/README_Hadoop_Streaming.md
 import sys
 import itertools
 import math
-from collections import Counter
 
 
-def calculate_w(key, group,output_re):
+def calculate_w(group,output_re):
+    '''I am a doc string.'''
     group = list(group)
     # calculate x_mean or y_mean
     w_squared = 0
     for line in group:
         output_re.append(line)
         line = line.replace("\n","")
-        docid = line.split("\t")[0]
         line = line.split("\t")[1]
-        term = line.split()[0]
-        nk = line.split()[2]
-        tf = line.split()[1]
-        N = line.split()[3]
-        tf = int(tf)
-        N = int(N)
-        nk = int(nk)
-        idf  = math.log10(N/nk)
-        w = tf * idf
-        w_squared += w * w
+        n_k = line.split()[2]
+        t_f = line.split()[1]
+        n_doc = line.split()[3]
+        t_f = int(t_f)
+        n_doc = int(n_doc)
+        n_k = int(n_k)
+        idf  = math.log10(n_doc/n_k)
+        weight = t_f * idf
+        w_squared += weight * weight
     return w_squared
 
 def reduce_one_group(output_re,w_squared):
+    '''I am a docstring.'''
     for line in output_re:
         line = line.replace("\n","")
         docid = line.split("\t")[0]
         line = line.split("\t")[1]
         term = line.split()[0]
-        nk = line.split()[2]
-        tf = line.split()[1]
-        N = line.split()[3]
-        tf = int(tf)
-        N = int(N)
-        nk = int(nk)
-        idf  = math.log10(N/nk)
-        print(f"{term},{idf}\t{docid} {tf} {w_squared}")
+        n_k = line.split()[2]
+        t_f = line.split()[1]
+        n_doc = line.split()[3]
+        t_f = int(t_f)
+        n_doc = int(n_doc)
+        n_k = int(n_k)
+        idf  = math.log10(n_doc/n_k)
+        print(f"{term},{idf}\t{docid} {t_f} {w_squared}")
     return 0
 
 
@@ -59,9 +58,9 @@ def keyfunc(line):
 def main():
     """Divide sorted lines into groups that share a key."""
     w_squared = 0
-    for key, group in itertools.groupby(sys.stdin, keyfunc):
+    for _, group in itertools.groupby(sys.stdin, keyfunc):
         output_re = []
-        w_squared = calculate_w(key,group,output_re)
+        w_squared = calculate_w(group,output_re)
         reduce_one_group( output_re,w_squared)
     # print(count)
 
