@@ -1,4 +1,4 @@
-"""Copied from project2, need to change later"""
+"""Copied from project2, need to change later."""
 import flask
 
 # app is a single object used by all the code modules in this package
@@ -15,7 +15,6 @@ app.config.from_object('search.config')
 #
 # EXAMPLE:
 # $ export INSTA485_SETTINGS=secret_key_config.py
-#TODO: change the next line:
 # app.config.from_envvar('SEARCH_SETTINGS', silent=True)
 
 # Tell our app about views and model.  This is dangerously close to a

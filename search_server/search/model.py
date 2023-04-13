@@ -1,4 +1,4 @@
-"""search model (database) API, copied from project2"""
+"""search model (database) API, copied from project2."""
 import sqlite3
 import flask
 import search

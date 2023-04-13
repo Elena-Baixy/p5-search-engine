@@ -11,7 +11,7 @@ SEARCH_INDEX_SEGMENT_API_URLS = [
     "http://localhost:9002/api/v1/hits/",
 ]
 
-#Copied from the p2 project, may need to change later
+# Copied from the p2 project, may need to change later
 # Root of this application, useful if it doesn't occupy an entire domain
 APPLICATION_ROOT = '/'
 

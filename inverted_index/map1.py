@@ -20,7 +20,6 @@ def clean():
             line = line.replace("\n", "")
             stopwords_list.append(line)
 
-    # with open("../tests/testdata/test_pipeline14/input_multi/input1.csv","r") as file:
     #     csv_reader = csv.reader(file)
     csv_reader = csv.reader(sys.stdin)
     for row in csv_reader:
